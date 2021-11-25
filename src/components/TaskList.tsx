@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState ,useEffect } from 'react'
 
 import '../styles/tasklist.scss'
 
@@ -11,25 +11,53 @@ interface Task {
 }
 
 export function TaskList() {
-  const [tasks, setTasks] = useState<Task[]>([]);
-  const [newTaskTitle, setNewTaskTitle] = useState('');
+  const [tasks, setTasks] = useState<Task[]>([]); // lista de tasks
+  const [newTaskTitle, setNewTaskTitle] = useState(''); // title da nova test
+  const [id ,setId] = useState(0); // gera um novo id para cada task
+
+  function addNewTask (task : Task){
+      const taskCopy = Array.from(tasks);
+      taskCopy.push(task)
+      setTasks(taskCopy);
+  }
 
   function handleCreateNewTask() {
     // Crie uma nova task com um id random, não permita criar caso o título seja vazio.
+    if(newTaskTitle != ''){
+      setId(id+1);   
+
+      addNewTask({id: id, title: newTaskTitle,isComplete:false})
+      
+    }  
   }
 
   function handleToggleTaskCompletion(id: number) {
     // Altere entre `true` ou `false` o campo `isComplete` de uma task com dado ID
+    const taskCopy = Array.from(tasks);
+    taskCopy.filter(function (el){
+       if(el.id == id && el.isComplete)
+          el.isComplete = false;
+        else if(el.id == id && !el.isComplete)
+          el.isComplete = true;
+    })  
+
+
+    setTasks(taskCopy)
   }
 
   function handleRemoveTask(id: number) {
     // Remova uma task da listagem pelo ID
+    const taskCopy = Array.from(tasks);
+    const tasksemid = taskCopy.filter(function (el){
+      return el.id != id;
+    })
+   setTasks(tasksemid)
   }
 
   return (
     <section className="task-list container">
       <header>
-        <h2>Minhas tasks</h2>
+        <h2>Minhas tasks {id}</h2>
 
         <div className="input-group">
           <input 
